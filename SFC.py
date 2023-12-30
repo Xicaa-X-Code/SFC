@@ -15,6 +15,7 @@ except:
     try: 
         os.system('pip install bs4')
         os.system('pip install rich')
+        os.system('pip install futures')
         os.system('pip install requests')
     except ModuleNotFoundError as e: sys.exit(e)
     
